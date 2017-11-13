@@ -19,10 +19,10 @@ function getItems (stock) {
 		if(err) throw err;
 		for(var i = 0; i < res.length; i++) {
 			var length = res[i].product_name.length;
-			var differance = 40 - length;
-			var string = res[i].product_name;
+			var differance = 35 - length;
+			var productName = res[i].product_name;
 			for (var j = 0; j<differance; j++) {
-				string += " ";
+				productName += " ";
 			}
 			var priceLength = res[i].price.toFixed(2).toString().length;
 			var diffPrice = 10 - priceLength;
@@ -48,7 +48,15 @@ function getItems (stock) {
 			for(var o = 0; o<soldDiff; o++) {
 				bufferSold +=" ";
 			}
-			var newChoice = "|Product Id:" + bufferId  + res[i].item_id + "| " + string + "| Price per unit:" + bufferPrice +    "$" + res[i].price.toFixed(2) + '| Stock:' + bufferStock + res[i].stock_quantity + "| Number Sold:" + bufferSold + res[i].number_sold + "|";
+			// var departmentLength = res[i].department_name.length;
+			// var departmentDiff = 15 - departmentLength;
+
+			// var departmentBuffer = '';
+			// for(var p = 0; o<departmentDiff; p++) {
+			// 	departmentBuffer +=" ";
+			// }	
+			// "| Department" + departmentBuffer + res[i].department_name + 		
+			var newChoice = "|Product Id:" + bufferId  + res[i].item_id + "| " + productName + "| Price per unit:" + bufferPrice +    "$" + res[i].price.toFixed(2) + '| Stock:' + bufferStock + res[i].stock_quantity + "| Number Sold:" + bufferSold + res[i].number_sold + "|" + res[i].departmen;
 			console.log(newChoice);
 		}
 		manager();
@@ -74,7 +82,7 @@ function addItem () {
 	    	name: "itemDepartment"
 	    },
 	]).then(function(itemAdd) {
-		var query = "INSERT INTO `bamazon`.`products` (`product_name`, `price`, `department_name`) VALUES ("+ itemAdd.itemName + "," + itemAdd.itemPrice.toFixed(2) + ',' + itemAdd.itemDepartment + ");";
+		var query = "INSERT INTO products (product_name, price, department_name,number_sold) VALUES ("+ itemAdd.itemName + "," + itemAdd.itemPrice + ',' + itemAdd.itemDepartment + ",0);";
 		connection.query(query, function(err, res) {
 			if(err) throw err;
 			console.log(res.affectedRows);

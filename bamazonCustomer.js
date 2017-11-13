@@ -11,7 +11,7 @@ var test_list = ['a','b','c'];
 var choice_list = [];
 //Logic for product update
 function changeQuantity (itemQuantity, itemName) {
-	connection.query("UPDATE products SET stock_quantity = (stock_quantity - " + itemQuantity + "), number_sold = (number_sold + " + itemQuantity + ") WHERE item_id = " + itemName, function(err, set) {
+	connection.query("UPDATE products SET stock_quantity = (stock_quantity - " + itemQuantity + "), number_sold = (number_sold + " + itemQuantity + "), product_sales = (price * number_sold) WHERE item_id = " + itemName, function(err, set) {
 		if (err) throw err;
 		// console.log('\n');
 	})
