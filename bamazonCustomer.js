@@ -12,7 +12,7 @@ var choice_list = [];
 function changeQuantity (itemQuantity, itemName) {
 	connection.query("UPDATE products SET stock_quantity = (stock_quantity - " + itemQuantity + ") WHERE item_id = " + itemName, function(err, set) {
 		if (err) throw err;
-		console.log(set.affectedRows);
+		// console.log(set.affectedRows);
 	})
 }
 function prompt() {
@@ -50,6 +50,7 @@ function prompt() {
 			{
 				'message':'Would you like to order something?',
 				'type':'confirm',
+				// 'validate': function(x) {return (x === n || x === N || x === Y || x === y)},
 				'name': 'confirm',
 			}
 		]).then(function(result) {
@@ -58,10 +59,12 @@ function prompt() {
 					{
 						'message': 'What would you like to order? Please enter items id#.',
 						'type': 'input',
+						'validate': function(num) {return (!isNaN(num) && num<res.length && num>0)},
 						'name': 'item'
 					},
 					{
 						'message':"How many units would you like to order?",
+						'validate': function(num) {return (!isNaN(num) && num>0)},
 						'type': 'input',
 						'name': 'quantity'
 					}
@@ -71,6 +74,7 @@ function prompt() {
 						inquirer.prompt([
 							{
 								'message':'Order successful. Would you like to continue?',
+								// 'validate': function(x) {return (x === n || x === N || x === Y || x === y)},
 								'type':'confirm',
 								'name': 'confirm',
 							}
@@ -88,6 +92,7 @@ function prompt() {
 						inquirer.prompt([
 							{
 								'message':'Would you like to try again?',
+								// 'validate':function(x) {return (x === n || x === N || x === Y || x === y)},
 								'type':'confirm',
 								'name': 'confirm',
 							}
@@ -102,6 +107,9 @@ function prompt() {
 					}	
 				})
 			}
+			else {
+				process.exit()
+			}	
 		})
 	})
 }
