@@ -58,6 +58,13 @@ INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `de
 INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Graham Cracker Mix', '2.87', '65', 'Grocery', '42');
 INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Grapefruit - White', '3.58', '84', 'Produce', '28');
 INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Ice Cream - Turtles Stick Bar', '9.93', '67', 'Grocery', '50');
+INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Wine - Black Tower Qr', '8.68', '9', 'Specialty', '7');
+INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Wine - Maipo Valle Cabernet', '13.00', '33', 'Specialty', '15');
+INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Wine - Red, Lurton Merlot De', '6.21', '40', 'Specialty', '21');
+INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Wine - White, French Cross', '9.72', '15', 'Specialty', '5');
+INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Wine - White, Pinot Grigio', '13.12', '7', 'Specialty', '3');
+INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Yeast Dry - Fleischman', '3.27', '38', 'Grocery', '3');
+INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Veal - Heart', '3.06', '26', 'Meat', '10');
 INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Icecream - Dstk Cml And Fdg', '14.76', '78', 'Grocery', '57');
 INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Icecream Bar - Del Monte', '4.04', '37', 'Grocery', '22');
 INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Jam - Marmalade, Orange', '7.97', '96', 'Grocery', '46');
@@ -106,14 +113,7 @@ INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `de
 INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Truffle Shells - White Chocolate', '5.19', '63', 'Bakery', '12');
 INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Turnip - Wax', '11.78', '27', 'Produce', '2');
 INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Turnip - White, Organic', '5.87', '99', 'Produce', '46');
-INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Veal - Heart', '3.06', '26', 'Meat', '10');
 INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Vinegar - Champagne', '1.46', '80', 'Grocery', '42');
-INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Wine - Black Tower Qr', '8.68', '9', 'Specialty', '7');
-INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Wine - Maipo Valle Cabernet', '13.00', '33', 'Specialty', '15');
-INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Wine - Red, Lurton Merlot De', '6.21', '40', 'Specialty', '21');
-INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Wine - White, French Cross', '9.72', '15', 'Specialty', '5');
-INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Wine - White, Pinot Grigio', '13.12', '7', 'Specialty', '3');
-INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Yeast Dry - Fleischman', '3.27', '38', 'Grocery', '3');
 USE bamazon;
 INSERT INTO departments (department_name, product_sales, over_head_cost, total_profit) VALUES ("Bakery", (SELECT SUM(price * number_sold) FROM products WHERE department_name = 'Bakery'), 700, ((SELECT SUM(price * number_sold) FROM products WHERE department_name = 'Bakery')-700));
 INSERT INTO departments (department_name, product_sales, over_head_cost, total_profit) VALUES ("Grocery", (SELECT SUM(price * number_sold) FROM products WHERE department_name = 'Grocery'), 3500, ((SELECT SUM(price * number_sold) FROM products WHERE department_name = 'Grocery')-3500));
