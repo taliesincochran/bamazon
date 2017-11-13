@@ -9,17 +9,15 @@ var connection = mysql.createConnection({
 });
 var test_list = ['a','b','c'];
 var choice_list = [];
-//Logic for product update
 function changeQuantity (itemQuantity, itemName) {
-	connection.query("UPDATE products SET stock_quantity = (stock_quantity - " + itemQuantity + "), number_sold = (number_sold + " + itemQuantity + ") WHERE item_id = " + itemName, function(err, set) {
+	connection.query("UPDATE products SET stock_quantity = (stock_quantity - " + itemQuantity + ") WHERE item_id = " + itemName, function(err, set) {
 		if (err) throw err;
-		// console.log('\n');
+		// console.log(set.affectedRows);
 	})
 }
 function prompt() {
 	connection.query("SELECT item_id, product_name, price, stock_quantity FROM products", function(err,res){
 		if(err) throw err;
-		//Logic for making the table look nice in the command line
 		for(var i = 0; i < res.length; i++) {
 			var length = res[i].product_name.length;
 			var differance = 40 - length;
@@ -27,7 +25,7 @@ function prompt() {
 			for (var j = 0; j<differance; j++) {
 				string += " ";
 			}
-			var priceLength = res[i].price.toFixed(2).toString().length;
+			var priceLength = res[i].price.toString().length;
 			var diffPrice = 10 - priceLength;
 			var bufferPrice = "";
 			for(var k = 0; k<diffPrice; k++) {
@@ -45,14 +43,14 @@ function prompt() {
 			for(var n = 0; n<idDiff; n++) {
 				bufferId += " ";
 			}
-			var newChoice = "|Product Id:" + bufferId  + res[i].item_id + "| " + string + "| Price per unit:" + bufferPrice +    "$" + res[i].price.toFixed(2) + '| Stock:' + bufferStock + res[i].stock_quantity + "|";
+			var newChoice = "|Product Id:" + bufferId  + res[i].item_id + "| " + string + "| Price per unit:" + bufferPrice +    "$" + res[i].price + '| Stock:' + bufferStock + res[i].stock_quantity + "|";
 			console.log(newChoice);
 		}
-		//logic for customer interaction
 		inquirer.prompt([
 			{
 				'message':'Would you like to order something?',
 				'type':'confirm',
+				// 'validate': function(x) {return (x === n || x === N || x === Y || x === y)},
 				'name': 'confirm',
 			}
 		]).then(function(result) {
@@ -61,7 +59,7 @@ function prompt() {
 					{
 						'message': 'What would you like to order? Please enter items id#.',
 						'type': 'input',
-						'validate': function(num) {return (!isNaN(num) && num<=res.length && num>0)},
+						'validate': function(num) {return (!isNaN(num) && num<res.length && num>0)},
 						'name': 'item'
 					},
 					{
@@ -71,11 +69,12 @@ function prompt() {
 						'name': 'quantity'
 					}
 				]).then(function(result){
-					if((res[result.item-1].stock_quantity-result.quantity) >= 0) {
+					if((res[result.item-1].stock_quantity-result.quantity) > 0) {
 						changeQuantity(result.quantity, result.item);
 						inquirer.prompt([
 							{
 								'message':'Order successful. Would you like to continue?',
+								// 'validate': function(x) {return (x === n || x === N || x === Y || x === y)},
 								'type':'confirm',
 								'name': 'confirm',
 							}
@@ -93,6 +92,7 @@ function prompt() {
 						inquirer.prompt([
 							{
 								'message':'Would you like to try again?',
+								// 'validate':function(x) {return (x === n || x === N || x === Y || x === y)},
 								'type':'confirm',
 								'name': 'confirm',
 							}
@@ -114,3 +114,4 @@ function prompt() {
 	})
 }
 prompt();
+
