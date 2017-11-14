@@ -19,8 +19,15 @@ function changeQuantity (itemQuantity, itemName) {
 function prompt() {
 	connection.query("SELECT item_id, product_name, price, stock_quantity FROM products", function(err,res){
 		if(err) throw err;
+		var header = "______________________________________________________________________";
+		var header2 ="|ID  |Item Name                                |Price      |#In Stock |";
+		var between ="|----|-----------------------------------------|-----------|----------|"; 
+		var footer = "|____|_________________________________________|___________|__________|";
 		//Logic for making the table look nice in the command line
+		console.log(header);
+		console.log(header2);
 		for(var i = 0; i < res.length; i++) {
+			console.log(between);
 			var length = res[i].product_name.length;
 			var differance = 40 - length;
 			var string = res[i].product_name;
@@ -45,9 +52,10 @@ function prompt() {
 			for(var n = 0; n<idDiff; n++) {
 				bufferId += " ";
 			}
-			var newChoice = "|Product Id:" + bufferId  + res[i].item_id + "| " + string + "| Price per unit:" + bufferPrice +    "$" + res[i].price.toFixed(2) + '| Stock:' + bufferStock + res[i].stock_quantity + "|";
+			var newChoice = "|" + bufferId  + res[i].item_id + "| " + string + "|" + bufferPrice +    "$" + res[i].price.toFixed(2) + '|' + bufferStock + res[i].stock_quantity + "|";
 			console.log(newChoice);
 		}
+		console.log(footer)
 		//logic for customer interaction
 		inquirer.prompt([
 			{

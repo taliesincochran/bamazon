@@ -15,9 +15,23 @@ function getItems (stock) {
 	if(stock === 'low') {
 		var query = 'WHERE stock_quantity <=5';
 	}
+
 	connection.query("SELECT * FROM products " + query, function(err,res){
+		var header = "________________________________________________________________________________________";
+		var header2 ="|ID  |Item Name                          |Department     |Price      |#In Stock |# Sold|";
+		var between ="|----|-----------------------------------|---------------|-----------|----------|------|"; 
+		var footer = "|____|___________________________________|_______________|___________|__________|______|";
 		if(err) throw err;
+		console.log(header);
+		console.log(header2);
 		for(var i = 0; i < res.length; i++) {
+			console.log(between);
+			var dLength = res[i].department_name.length;
+			var dDiff = 15-dLength;
+			var dBuff = "";
+			for (var j = 0; j<dDiff; j++) {
+				dBuff += " ";
+			}
 			var length = res[i].product_name.length;
 			var differance = 35 - length;
 			var productName = res[i].product_name;
@@ -47,18 +61,11 @@ function getItems (stock) {
 			var bufferSold = '';
 			for(var o = 0; o<soldDiff; o++) {
 				bufferSold +=" ";
-			}
-			// var departmentLength = res[i].department_name.length;
-			// var departmentDiff = 15 - departmentLength;
-
-			// var departmentBuffer = '';
-			// for(var p = 0; o<departmentDiff; p++) {
-			// 	departmentBuffer +=" ";
-			// }	
-			// "| Department" + departmentBuffer + res[i].department_name + 		
-			var newChoice = "|Product Id:" + bufferId  + res[i].item_id + "| " + productName + "| Price per unit:" + bufferPrice +    "$" + res[i].price.toFixed(2) + '| Stock:' + bufferStock + res[i].stock_quantity + "| Number Sold:" + bufferSold + res[i].number_sold + "|" + res[i].departmen;
+			}		
+			var newChoice = "|" + bufferId  + res[i].item_id + "|" + productName + "|" + dBuff + res[i].department_name + "|" + bufferPrice +    "$" + res[i].price.toFixed(2) + '|' + bufferStock + res[i].stock_quantity + "|" + bufferSold + res[i].number_sold + "|";
 			console.log(newChoice);
 		}
+		console.log(footer);
 		manager();
 	})
 }
@@ -82,7 +89,7 @@ function addItem () {
 	    	name: "itemDepartment"
 	    },
 	]).then(function(itemAdd) {
-		var query = "INSERT INTO products (product_name, price, department_name,number_sold) VALUES ("+ itemAdd.itemName + "," + itemAdd.itemPrice + ',' + itemAdd.itemDepartment + ",0);";
+		var query = "INSERT INTO products (product_name, price, department_name, number_sold) VALUES ("+ itemAdd.itemName + "," + itemAdd.itemPrice + ',' + itemAdd.itemDepartment + ",0);";
 		connection.query(query, function(err, res) {
 			if(err) throw err;
 			console.log(res.affectedRows);
