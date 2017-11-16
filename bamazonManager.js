@@ -1,6 +1,5 @@
 var mysql = require('mysql');
 var inquirer = require('inquirer');
-var fs = require('fs');
 var connection = mysql.createConnection({
 	host: "localhost",
 	port:3306,
@@ -8,7 +7,15 @@ var connection = mysql.createConnection({
 	password: 'Yourjoyisyoursorrow6392!',
 	database: 'bamazon'
 });
-
+department_list = [];
+function getDepartments () {
+	connection.query("SELECT department_name FROM departments", function(err, res) {
+		if (err) throw err;
+		for(var i = 0; i<res.length; i++) {
+			department_list.push(res[i].department_name);
+		}
+	})
+} 
 function getItems (stock) {
 	if(stock === 'all') {
 		var query = ''; 
@@ -86,7 +93,7 @@ function addItem () {
 	    {
 	    	message: "What department is the item in?",
 	    	type: "list",
-	    	choices: ["Bakery","Grocery","Specialty","Meat","Seafood","Produce"],
+	    	choices: department_list,
 	    	name: "itemDepartment"
 	    },
 	]).then(function(itemAdd) {
@@ -107,15 +114,14 @@ function update() {
 			name: "product"
 		}
 	]).then(function(res){
-		var valid = connection.query("SELECT COUNT(item_id) AS test FROM products WHERE item_id = " + res.product, function(err , validate) {
-			if(err) throw err;
-			test = JSON.stringify(validate[0].test);
-			console.log(test);
+		var valid = connection.query("SELECT COUNT(item_id) AS idTest FROM products WHERE item_id =" + res.product, function(err , validate) {
+			if (err) throw err;
+			test = JSON.stringify(validate[0].idTest);
 			if(test !== 0) {
 				product = res.product;
-				connection.query("SELECT * FROM products WHERE item_id = ?", [product], function (err, result) {
+				connection.query("SELECT * FROM products WHERE item_id =" + product, function (err, result) {
 					if(err) throw err;
-					console.log("prduct id: "+ result[0].item_id + " product name: " + result[0].product_name + ", price: "+ result[0].price + ", department: " + result[0].department_name);
+					console.log("product id: "+ result[0].item_id + " product name: " + result[0].product_name + ", price: "+ result[0].price + ", department: " + result[0].department_name);
 					inquirer.prompt([
 						{
 							message:"What would you like to update about this product",
@@ -124,8 +130,8 @@ function update() {
 							name: "updateWhat"	
 						}
 					]).then(function(updateThis) {
-						switch(updateThis.updateWhat) {
 
+						switch(updateThis.updateWhat) {
 							case "Product Name":
 							inquirer.prompt([
 								{
@@ -134,11 +140,11 @@ function update() {
 									name: "newProductName"
 							}]).then(function(updateName) {
 								if (err) throw err;
-								console.log('res.product', res.product);
-								connection.query("UPDATE products SET product_name ='" + updateName.newProductName + "' WHERE item_id = " + res.product, function(err, subRes){
-									console.log("Item " + subRes.item_id + "\'s name has been changed to " + updateName.newProductName);
+								connection.query("UPDATE products SET product_name ='" + updateName.newProductName + "' WHERE item_id = " + product, function(err, subRes){
+									if (err) throw err;
+									console.log("Item #" + product + "\'s name has been changed to " + updateName.newProductName);
+									manager();
 								});
-								manager();
 							})
 							
 							break;
@@ -153,10 +159,11 @@ function update() {
 								}
 							]).then(function(updatePrice) {
 								if (err) throw err;
-								connection.query("UPDATE products SET price='" + updatePrice.newProductPrice + " WHERE item_id= " + res.product, function(err, subRes){
-									console.log("Item " + subRes.item_id + "\'s price has been changed to " + updatePrice.newProductPrice);
+								connection.query("UPDATE products SET price=" + updatePrice.newProductPrice + " WHERE item_id= " + product, function(err, subRes){
+									console.log("Item #" + product + "\'s price has been changed to " + updatePrice.newProductPrice + " per unit.");
+									manager();
 								});
-								manager();
+								
 							})
 							
 							break;
@@ -165,14 +172,16 @@ function update() {
 							inquirer.prompt([
 								{
 									message: "What is the new department assignment?",
-									type: "input",
-									name: "newDepartment"
-							}]).then(function(updateDepartment) {
-								connection.query("UPDATE products SET department_name='" + updateDepartment.newDepartment + "' WHERE item_id= " + res.product, function(err, subRes){
+									type: "list",
+									name: "newDepartment",
+									choices: department_list
+								}
+							]).then(function(updateDepartment) {
+								connection.query("UPDATE products SET department_name='" + updateDepartment.newDepartment + "' WHERE item_id= " + product, function(err, subRes){
 									if (err) throw err;
-									console.log("Item " + subRes.itemID + "\'s price has been changed to " + updateDepartment.newDepartment);
+									console.log("Item #" + product + "\'s assigned department has been changed to " + updateDepartment.newDepartment);
+									manager();
 								});
-								manager();
 							})
 							break;
 						}
@@ -185,7 +194,6 @@ function update() {
 		})
 	})
 }
-
 function order() {
 	inquirer.prompt([
 		{
@@ -200,14 +208,17 @@ function order() {
 			name:"order"
 	    }
 	]).then(function(orderQuery) {
-		console.log("item ", orderQuery.itemID);
 		var valid = connection.query("SELECT COUNT(item_id) AS test FROM products WHERE item_id = " + orderQuery.itemID, function(err , res) {
 			if(err) throw err;
-			console.log(JSON.stringify(res[0].test));
 			if(res[0].test !== 0) {
 				connection.query("UPDATE products SET stock_quantity = (stock_quantity + " + orderQuery.order + ") WHERE item_id =" + orderQuery.itemID, function(err, res) {
 					if (err) throw err; 
+					var itemName = orderQuery.itemID;
+					var itemQuantity = orderQuery.order; 
 					console.log("Order successful. You ordered " + orderQuery.order + " unit(s) of item #" + orderQuery.itemID);
+					connection.query("INSERT INTO orders (email, item_id, item_quantity, date_of_order) VALUES('order by manager'," + itemName + "," + itemQuantity + ",CURDATE())", function(error, log) {
+						if(error) throw error;
+					})
 					manager();			
 				})
 			}
@@ -218,13 +229,55 @@ function order() {
 		})		
 	})
 }
+function trackOrders () {
+	connection.query("SELECT * FROM orders", function(err, res) {
+		if (err) throw err;
+		var header = "___________________________________________________________________________";
+		var header2 ="|email of customer                       |item id |Quantity |Date ordered |";
+		var between ="|----------------------------------------|--------|---------|-------------|"; 
+		var footer = "|________________________________________|________|_________|_____________|";
+		console.log(header);
+		console.log(header2);
+		for(var i = 0; i < res.length; i++) {
+			console.log(between);
+			var eLength = res[i].email.length;
+			var eDiff = 40-eLength;
+			var eBuff = "";
+			for (var j = 0; j<eDiff; j++) {
+				eBuff += " ";
+			}
+			var stockLength = res[i].item_quantity.toString().length;
+			var diffStock = 9 - stockLength;
+			var bufferStock = "";
+			for(var m = 0; m<diffStock; m++) {
+				bufferStock += " ";
+			}
+			var idLength = res[i].item_id.toString().length;
+			var idDiff = 8-idLength;
+			var bufferId = '';
+			for(var n = 0; n<idDiff; n++) {
+				bufferId += " ";
+			}
+			var orderLength = res[i].date_of_order.toString().length;
+			var orderDiff = 13-orderLength;
+			var bufferOrder = '';
+			for(var o = 0; o<orderDiff; o++) {
+				bufferOrder +=" ";
+			}		
+			var newChoice = "|" + eBuff + res[i].email + "|" + bufferId + res[i].item_id + "|" + bufferStock + res[i].item_quantity + "|" + bufferOrder + res[i].date_of_order + "|";
+			console.log(newChoice);
+		}
+		console.log(footer);
+		manager();
 
+	} )
+}
 function manager () {
 	inquirer.prompt([
 		{
 			message: "What would you like to do?",
 			type: "list",
-			choices: ["View inventory.", "View items with low inventory.", "Order an item.", "Add new product.", "Update an existing item.", "Quit"],
+			choices: ["View inventory.", "View items with low inventory.", "Order an item.", "Add new product.", "Update an existing item.", "Review customer orders.", "Quit"],
 			name: 'managerChoice'
 		}
 	]).then(function(result) {
@@ -244,10 +297,14 @@ function manager () {
 			case "Update an existing item.":
 				update();
 				break;
+			case "Review customer orders.":
+				trackOrders();
+				break;
 			case "Quit":
-				console.log("You can't quit, you're fired!  Just kidding :)")
+				connection.end();
 				process.exit();
 		}
 	})
 }
+getDepartments();
 manager();

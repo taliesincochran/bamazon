@@ -45,7 +45,7 @@ function newCustomer() {
    			}
 		},
 		{
-			message:"Please enter your new password. The password must be at least \n8-32 alpha numeric characters long and have one uppercase letter\n and at least one number.\n",
+			message:"Please enter your new password. The password must be at least \n   8-32 alpha numeric characters long and have one uppercase letter\n   and at least one number.\n",
 			type:"password",
 			name:"password",
 			validate: function (pass) {
@@ -58,7 +58,6 @@ function newCustomer() {
 			}
 		}
 	]).then(function(result) {
-		console.log(result.password);
 		username = result.email;
 		var query = "INSERT INTO users (email, pass) VALUES ('" + result.email + "','" + result.password + "')";
 		connection.query(query, function(err,res) {
@@ -87,10 +86,8 @@ function returnCustomer() {
 		var query = "SELECT COUNT(email) as test FROM users WHERE pass ='" + pass + "'";
 		connection.query(query, function(err, result) {
 			if(err) throw err;
-			console.log(result);
 			if(result[0].test === 1) {
 				connection.query("SELECT email as email FROM users WHERE pass ='" + pass + "'", function(err, result2) {
-					console.log(result2);
 					if(result2[0].email === email) {
 						prompt();
 					}
@@ -108,30 +105,16 @@ function returnCustomer() {
 function changeQuantity (itemQuantity, itemName) {
 	connection.query("UPDATE products SET stock_quantity = (stock_quantity - " + itemQuantity + "), number_sold = (number_sold + " + itemQuantity + "), product_sales = (price * number_sold) WHERE item_id = " + itemName, function(err, set) {
 		if (err) throw err;
-		console.log(set);
-		connection.query("INSERT INTO orders (email, item_id, item_quantity, date_of_order) VALUES('" + username + "'," + itemName + "," + itemQuantity + ",CURDATE())", function(error, log) {
+		connection.query("INSERT INTO orders (email, item_id, item_quantity, date_of_order) VALUES('" + username + "'," + itemName + "," + (itemQuantity * -1) + ",CURDATE())", function(error, log) {
 			if(error) throw error;
-			console.log(log);
-			console.log("Update sucessfull.")
 			shoppingCart.push({'id': itemName,'quantity': itemQuantity});
-			inquirer.prompt([
-			{
-				message:"Order successful. You ordered " + itemQuantity + " of item #" + itemName +  ". Would you like to continue?",
-				type:'confirm',
-				name: 'confirm',
-			}
-			]).then(function(result) {
+			if(shoppingCart.length > 0) {
 				console.log("You've ordered:")
-					for(var i = 0; i<shoppingCart.length; i++) {
-						console.log(shoppingCart[i].quantity + " of item #" + shoppingCart[i].id);
-					}
-				if(result.confirm) {
-					prompt();
-				}	
-				else {					
-					process.exit()
-				}	
-			})
+				for(var i = 0; i<shoppingCart.length; i++) {
+					console.log(shoppingCart[i].quantity + " of item #" + shoppingCart[i].id);
+				}
+			}
+			prompt();
 		})
 	})	
 }
@@ -176,6 +159,12 @@ function prompt() {
 			console.log(newChoice);
 		}
 		console.log(footer)
+		if(shoppingCart.length > 0) {
+			console.log("You've ordered:")
+			for(var i = 0; i<shoppingCart.length; i++) {
+				console.log(shoppingCart[i].quantity + " of item #" + shoppingCart[i].id);
+			}
+		}
 		//logic for customer interaction
 		inquirer.prompt([
 			{
