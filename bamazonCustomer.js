@@ -7,15 +7,135 @@ var connection = mysql.createConnection({
 	password: 'Yourjoyisyoursorrow6392!',
 	database: 'bamazon'
 });
-var test_list = ['a','b','c'];
-var choice_list = [];
-//Logic for product update
+var shoppingCart = [];
+var username;
+var total = 0;
+//Logic for login and new customer sign in.
+function login() {
+	inquirer.prompt([
+		{
+			message: "Welcome to Bamazon.  Are you a new user or a return customer?",
+			name: "new",
+			type: "list",
+			choices: ["new","returning"]
+		}
+	]).then(function(result){
+		if(result.new === "new") {
+			newCustomer();
+		}
+		else {
+			returnCustomer();
+		}
+	})
+};
+function newCustomer() {
+	inquirer.prompt([
+		{
+			message:"Please enter your email.",
+			type:"input",
+			name:"email",
+			validate: function (mail)  {  
+ 				if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {  
+   					return (true);
+  				}  
+  				else {
+  					console.log("You have entered an invalid email address!");
+  					return (false);
+  				} 
+   			}
+		},
+		{
+			message:"Please enter your new password. The password must be at least \n8-32 alpha numeric characters long and have one uppercase letter\n and at least one number.\n",
+			type:"password",
+			name:"password",
+			validate: function (pass) {
+				if(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/.test(pass)) {
+					return true;
+				}
+				else {
+					console.log("You need to enter a valid password.")
+				}
+			}
+		}
+	]).then(function(result) {
+		console.log(result.password);
+		username = result.email;
+		var query = "INSERT INTO users (email, pass) VALUES ('" + result.email + "','" + result.password + "')";
+		connection.query(query, function(err,res) {
+			if(err) throw err;
+
+		});
+		prompt();
+	})
+}
+function returnCustomer() {
+	inquirer.prompt([
+		{
+			message:"Enter your email address.",
+			type:"input",
+			name:'email'
+		},
+		{
+			message:"Enter your password.",
+			type:"password",
+			name:"pass"
+		}
+	]).then(function(res){
+		username = res.email;
+		var email = res.email;
+		var pass = res.pass;
+		var query = "SELECT COUNT(email) as test FROM users WHERE pass ='" + pass + "'";
+		connection.query(query, function(err, result) {
+			if(err) throw err;
+			console.log(result);
+			if(result[0].test === 1) {
+				connection.query("SELECT email as email FROM users WHERE pass ='" + pass + "'", function(err, result2) {
+					console.log(result2);
+					if(result2[0].email === email) {
+						prompt();
+					}
+				})
+			}			
+			else {
+				console.log("Incorrect email or password.");
+				login();
+			}
+		})
+
+	})
+}
+//Logic concerning updating database on orders
 function changeQuantity (itemQuantity, itemName) {
 	connection.query("UPDATE products SET stock_quantity = (stock_quantity - " + itemQuantity + "), number_sold = (number_sold + " + itemQuantity + "), product_sales = (price * number_sold) WHERE item_id = " + itemName, function(err, set) {
 		if (err) throw err;
-		// console.log('\n');
-	})
+		console.log(set);
+		connection.query("INSERT INTO orders (email, item_id, item_quantity, date_of_order) VALUES('" + username + "'," + itemName + "," + itemQuantity + ",CURDATE())", function(error, log) {
+			if(error) throw error;
+			console.log(log);
+			console.log("Update sucessfull.")
+			shoppingCart.push({'id': itemName,'quantity': itemQuantity});
+			inquirer.prompt([
+			{
+				message:"Order successful. You ordered " + itemQuantity + " of item #" + itemName +  ". Would you like to continue?",
+				type:'confirm',
+				name: 'confirm',
+			}
+			]).then(function(result) {
+				console.log("You've ordered:")
+					for(var i = 0; i<shoppingCart.length; i++) {
+						console.log(shoppingCart[i].quantity + " of item #" + shoppingCart[i].id);
+					}
+				if(result.confirm) {
+					prompt();
+				}	
+				else {					
+					process.exit()
+				}	
+			})
+		})
+	})	
 }
+//Logic for user prompt item ordering and item selection display
 function prompt() {
 	connection.query("SELECT item_id, product_name, price, stock_quantity FROM products", function(err,res){
 		if(err) throw err;
@@ -80,21 +200,7 @@ function prompt() {
 					}
 				]).then(function(result){
 					if((res[result.item-1].stock_quantity-result.quantity) >= 0) {
-						changeQuantity(result.quantity, result.item);
-						inquirer.prompt([
-							{
-								'message':'Order successful. Would you like to continue?',
-								'type':'confirm',
-								'name': 'confirm',
-							}
-						]).then(function(result) {
-							if(result.confirm) {
-								prompt();
-							}	
-							else {
-								process.exit()
-							}	
-						})	
+						changeQuantity(result.quantity, result.item);	
 					}
 					else {
 						console.log("Insufficient quantity. Please try again.");
@@ -102,16 +208,19 @@ function prompt() {
 							{
 								'message':'Would you like to try again?',
 								'type':'confirm',
-								'name': 'confirm',
+								'name': 'try',
 							}
-						]).then(function(result) {
-							if(result.confirm) {
+						]).then(function(response) {
+							console.log(response);
+							if(response.try) {
 								prompt();
 							}
-							else {
-								process.exit()
-							}			
-						})
+							else {	
+								connection.end();
+								process.exit();
+							}
+						})			
+				
 					}	
 				})
 			}
@@ -121,4 +230,4 @@ function prompt() {
 		})
 	})
 }
-prompt();
+login();

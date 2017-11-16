@@ -17,6 +17,18 @@ CREATE TABLE departments (
 	over_head_cost DECIMAL(8,2) NOT NULL, 
 	PRIMARY KEY(department_id)
 );
+CREATE TABLE users (
+	email VARCHAR(36) NOT NULL,
+    pass VARCHAR(36) NOT NULL
+);
+
+CREATE TABLE orders (
+	email VARCHAR(36) NOT NULL,
+    item_quantity INT NOT NULL,
+    item_id INT NOT NULL,
+    date_of_order VARCHAR(10)
+);
+
 
 INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Wine - White, French Cross', '9.72', '15', 'Specialty', '5');
 INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Wine - White, Pinot Grigio', '13.12', '7', 'Specialty', '3');
