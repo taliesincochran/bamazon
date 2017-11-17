@@ -15,7 +15,7 @@ function getDepartments () {
 			department_list.push(res[i].department_name);
 		}
 	})
-} 
+}
 //logic to see all stock or low quantity stock
 function getItems (stock) {
 	if(stock === 'all') {
@@ -75,7 +75,7 @@ function getItems (stock) {
 			console.log(newChoice);
 		}
 		console.log(footer);
-		manager();
+		supervisor();
 	})
 }
 //logic to add an item
@@ -103,7 +103,7 @@ function addItem () {
 		connection.query(query, function(err, res) {
 			if(err) throw err;
 			console.log("You have sucessfully added "+ itemAdd.itemName + " at the price of $" + itemAdd.itemPrice + "per unit to the " + itemAdd. itemDepartment + " department.");
-			manager();
+			supervisor();
 		})
 
 	})
@@ -147,7 +147,7 @@ function update() {
 								connection.query("UPDATE products SET product_name = " + updateName.newProductName + "' WHERE item_id = " + product, function(err, subRes){
 									if (err) throw err;
 									console.log("Item #" + product + "\'s name has been changed to " + updateName.newProductName);
-									manager();
+									supervisor();
 								});
 							})							
 							break;
@@ -164,7 +164,7 @@ function update() {
 								if (err) throw err;
 								connection.query("UPDATE products SET price=" + updatePrice.newProductPrice + " WHERE item_id= " + product, function(err, subRes){
 									console.log("Item #" + product + "\'s price has been changed to " + updatePrice.newProductPrice + " per unit.");
-									manager();
+									supervisor();
 								});
 								
 							})							
@@ -181,7 +181,7 @@ function update() {
 								connection.query("UPDATE products SET department_name='" + updateDepartment.newDepartment + "' WHERE item_id= " + product, function(err, subRes){
 									if (err) throw err;
 									console.log("Item #" + product + "\'s assigned department has been changed to " + updateDepartment.newDepartment);
-									manager();
+									supervisor();
 								});
 							})
 							break;
@@ -190,7 +190,7 @@ function update() {
 				})
 			} else {
 				console.log("That item does not exist. Try again");
-				manager();
+				supervisor();
 			}
 		})
 	})
@@ -221,22 +221,22 @@ function order() {
 					connection.query("INSERT INTO orders (email, item_id, item_quantity, date_of_order) VALUES('order by supervisor'," + itemName + "," + itemQuantity + ",CURDATE())", function(error, log) {
 						if(error) throw error;
 					})
-					manager();			
+					supervisor();			
 				})
 			}
 			else {
 				console.log("That item appears to not exist");
-				manager();
+				supervisor();
 			}
 		})		
 	})
 }
-//logic to see all customer and manager orders
+//logic to see all customer and supervisor orders
 function trackOrders () {
 	connection.query("SELECT * FROM orders", function(err, res) {
 		if (err) throw err;
 		var header = "___________________________________________________________________________";
-		var header2 ="|email of customer                       |item id |Quantity |Date ordered |";
+		var header2 ="|ordered by                              |item id |Quantity |Date ordered |";
 		var between ="|----------------------------------------|--------|---------|-------------|"; 
 		var footer = "|________________________________________|________|_________|_____________|";
 		console.log(header);
@@ -271,7 +271,7 @@ function trackOrders () {
 			console.log(newChoice);
 		}
 		console.log(footer);
-		manager();
+		supervisor();
 
 	} )
 }
@@ -322,7 +322,7 @@ function getSales() {
 			
 		}
 		console.log(footer);
-		manager();
+		supervisor();
 	})
 }
 //Logic to add a department
@@ -343,18 +343,18 @@ function addDepartment () {
 			connection.query(query, function(err, result){
 				if(err) throw err;
 				console.log("Department added sucessfully.");
-				manager();
+				supervisor();
 		})
 	})
 }
 //Logic that gets it all going
-function manager() {
+function supervisor() {
 	inquirer.prompt([
 		{
 			message: "What would you like to do?",
 			type: "list",
 			name: "selection",
-			choices: ["View sales by department.", "Add a department.", "View inventory.", "View items with low inventory.", "Order an item.", "Add new product.", "Update an existing item.", "Review customer orders.", "Quit"]
+			choices: ["View sales by department.", "Add a department.", "View inventory.", "View items with low inventory.", "Order an item.", "Add new product.", "Update an existing item.", "Review orders.", "Quit"]
 		}
 	]).then(function(res) {
 		switch(res.selection)  {
@@ -373,7 +373,7 @@ function manager() {
 			case "Update an existing item.":
 				update();
 				break;
-			case "Review customer orders.":
+			case "Review orders.":
 				trackOrders();
 				break;
 			case "Add a department.":
@@ -389,5 +389,6 @@ function manager() {
 		}
 	})	
 }
+
 getDepartments();
-manager();
+supervisor();

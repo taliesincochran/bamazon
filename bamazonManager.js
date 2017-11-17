@@ -233,7 +233,7 @@ function trackOrders () {
 	connection.query("SELECT * FROM orders", function(err, res) {
 		if (err) throw err;
 		var header = "___________________________________________________________________________";
-		var header2 ="|email of customer                       |item id |Quantity |Date ordered |";
+		var header2 ="|ordered by                              |item id |Quantity |Date ordered |";
 		var between ="|----------------------------------------|--------|---------|-------------|"; 
 		var footer = "|________________________________________|________|_________|_____________|";
 		console.log(header);
@@ -277,7 +277,7 @@ function manager () {
 		{
 			message: "What would you like to do?",
 			type: "list",
-			choices: ["View inventory.", "View items with low inventory.", "Order an item.", "Add new product.", "Update an existing item.", "Review customer orders.", "Quit"],
+			choices: ["View inventory.", "View items with low inventory.", "Order an item.", "Add new product.", "Update an existing item.", "Review orders.", "Quit"],
 			name: 'managerChoice'
 		}
 	]).then(function(result) {
@@ -297,7 +297,7 @@ function manager () {
 			case "Update an existing item.":
 				update();
 				break;
-			case "Review customer orders.":
+			case "Review orders.":
 				trackOrders();
 				break;
 			case "Quit":

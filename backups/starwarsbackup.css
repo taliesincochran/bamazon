@@ -1,0 +1,77 @@
+p {
+	font-size: 8px;
+	text-align: center;
+	line-height: 11px;
+
+}
+body {
+	background-image: url(../images/background.png);
+	background-size: 100%;
+	background-repeat: no-repeat;
+	font-family: monospace;
+	}
+button {
+	width: 32px;
+	height: 14px;
+	font-size: 6px;
+}
+.clearfix:after {
+   content: " "; /* Older browser do not support empty content */
+   visibility: hidden;
+   display: block;
+   height: 0;
+   clear: both;
+}
+#gameHeader {
+	text-align: right;
+	padding-right:113px;
+	font-size: 2em;
+
+}
+.list,
+h2,
+button,
+#gameText,
+#gameText2 {
+	margin-left: 5px;
+}
+.hidden {
+	display: none;
+}
+.invisible {
+	visibility: hidden;
+}
+li {
+	display: inline-block;
+	float: left;
+}
+.box {
+	width:106px;
+	height:86px;
+	border-style: solid;
+	border-width: 1px;
+}
+.box1,
+.box2 {
+	background-color: white;
+	border-color: green;
+}
+.box3 {
+	background-color: red;
+	border-color: black;
+}
+.box4 {
+	background-color: black;
+	border-color: green;
+	color: white;
+}
+img {
+	width:88px;
+	height:59px;
+	margin: 0 auto;
+	padding-left: 10px;
+}
+#gameText,
+#gameText2 {
+	text-align: left;
+}

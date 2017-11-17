@@ -30,13 +30,6 @@ CREATE TABLE orders (
     item_id INT NOT NULL,
     date_of_order VARCHAR(10)
 );
-CREATE TABLE managers (
-	user_id INT AUTO_INCREMENT,
-	email VARCHAR(36) NOT NULL,
-    pass VARCHAR(36) NOT NULL,
-    status VARCHAR(10) NOT NULL,
-    PRIMARY KEY (user_id)
-);
 
 INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Wine - White, French Cross', '9.72', '15', 'Specialty', '5');
 INSERT INTO `bamazon`.`products` (`product_name`, `price`, `stock_quantity`, `department_name`, `number_sold`) VALUES ('Wine - White, Pinot Grigio', '13.12', '7', 'Specialty', '3');

@@ -108,12 +108,10 @@ function changeQuantity (itemQuantity, itemName) {
 		connection.query("INSERT INTO orders (email, item_id, item_quantity, date_of_order) VALUES('" + username + "'," + itemName + "," + (itemQuantity * -1) + ",CURDATE())", function(error, log) {
 			if(error) throw error;
 			shoppingCart.push({'id': itemName,'quantity': itemQuantity});
-			if(shoppingCart.length > 0) {
-				console.log("You've ordered:")
-				for(var i = 0; i<shoppingCart.length; i++) {
-					console.log(shoppingCart[i].quantity + " of item #" + shoppingCart[i].id);
-				}
-			}
+			connection.query("SELECT price FROM products WHERE item_id=" + itemName, function(err, price) {
+				if(err) throw err;
+				total += (price[0].price * itemQuantity);
+			})
 			prompt();
 		})
 	})	
@@ -165,6 +163,7 @@ function prompt() {
 				console.log(shoppingCart[i].quantity + " of item #" + shoppingCart[i].id);
 			}
 		}
+		console.log("Your total is " + total.toFixed(2));
 		//logic for customer interaction
 		inquirer.prompt([
 			{
