@@ -23,5 +23,5 @@ But wait, there's more! Supervisors get access to all the same functionality of 
 and view sales totals. <br />
 ![Supervisor View Sales](screenshots/viewSales.png) <br />
 
-It's everything you can think of and more.  Call Bamazon to start today! 1-800-555-2368
+It's everything you can think of and more. 
 
